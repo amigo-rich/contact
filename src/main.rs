@@ -72,7 +72,7 @@ fn main() -> Result<(), Error> {
         Some(("search", search_matches)) => {
             Operation::List(search_matches.value_of("needle").unwrap())
         }
-        _ => unreachable!(),
+        _ => return Err(Error::NoArg),
     };
     run(operation)
 }

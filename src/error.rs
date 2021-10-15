@@ -27,6 +27,7 @@ pub enum Error {
     Empty(Field),
     Email(email_address::Error),
     Env,
+    NoArg,
     NoFile(PathBuf),
     Rusqlite(rusqlite::Error),
 }
@@ -37,6 +38,7 @@ impl std::fmt::Debug for Error {
             Error::Empty(t) => write!(f, "{:?}", t),
             Error::Email(e) => write!(f, "Parsing email address failed: '{}'", e),
             Error::Env => write!(f, "Environemnt variable CONTACT_DB is not set"),
+            Error::NoArg => write!(f, "Usage: 'contact add' or 'contact search'"),
             Error::NoFile(p) => write!(f, "The requested file was not found: '{:?}'", p),
             Error::Rusqlite(e) => write!(f, "A rusqlite error occurred: ;{}", e),
         }
