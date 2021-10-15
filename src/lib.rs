@@ -32,12 +32,8 @@ fn get_database() -> Result<Database, Error> {
 pub fn run(operation: Operation) -> Result<(), Error> {
     let database = get_database()?;
     match operation {
-        Operation::Add(contact) => {
-            let _ = database.insert_contact(&contact)?;
-        }
-        Operation::Delete(id) => {
-            let _ = database.delete_contact(id)?;
-        }
+        Operation::Add(contact) => database.insert_contact(&contact),
+        Operation::Delete(id) => database.delete_contact(id),
         Operation::List => {
             if let Some(results) = database.select_contacts()? {
                 println!(
@@ -56,6 +52,7 @@ pub fn run(operation: Operation) -> Result<(), Error> {
                     );
                 }
             }
+            Ok(())
         }
         Operation::Search(needle) => {
             if let Some(results) = database.select_contact(&needle)? {
@@ -64,7 +61,7 @@ pub fn run(operation: Operation) -> Result<(), Error> {
                     println!("{}", result);
                 }
             }
+            Ok(())
         }
     }
-    Ok(())
 }

@@ -58,7 +58,7 @@ impl Database {
         self.connection.execute(sql, params![contact_id])?;
         Ok(())
     }
-    pub fn insert_contact(&self, contact: &Contact) -> Result<i64, Error> {
+    pub fn insert_contact(&self, contact: &Contact) -> Result<(), Error> {
         let sql = r#"
             INSERT INTO contact (forename, surname, email, organisation, telephone)
             VALUES (?1, ?2, ?3, ?4, ?5)
@@ -73,7 +73,7 @@ impl Database {
                 contact.telephone(),
             ],
         )?;
-        Ok(self.connection.last_insert_rowid())
+        Ok(())
     }
     pub fn select_contacts(&self) -> Result<Option<Vec<Record<Contact>>>, Error> {
         let sql = r#"
