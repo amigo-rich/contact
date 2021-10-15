@@ -50,6 +50,14 @@ impl Database {
         let connection = Connection::open(p)?;
         Ok(Database { connection })
     }
+    pub fn delete_contact(&self, contact_id: i64) -> Result<(), Error> {
+        let sql = r#"
+            DELETE FROM contact
+            WHERE id = ?1
+        "#;
+        self.connection.execute(sql, params![contact_id])?;
+        Ok(())
+    }
     pub fn insert_contact(&self, contact: &Contact) -> Result<i64, Error> {
         let sql = r#"
             INSERT INTO contact (forename, surname, email, organisation, telephone)

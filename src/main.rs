@@ -11,6 +11,7 @@ struct Opts {
 #[derive(Clap)]
 enum SubCommand {
     Add(Add),
+    Delete(Delete),
     List(List),
     Search(Search),
 }
@@ -33,6 +34,14 @@ struct Add {
     /// The contact's telephone-number
     #[clap(short, long)]
     telephone: Option<String>,
+}
+
+/// Delete the contact with a given Id
+#[derive(Clap)]
+struct Delete {
+    /// The contact's Id, use 'list' to determine this
+    #[clap(short, long)]
+    id: i64,
 }
 
 /// List all contacts
@@ -61,6 +70,7 @@ fn main() -> Result<(), Error> {
             }
             Operation::Add(contact)
         }
+        SubCommand::Delete(d) => Operation::Delete(d.id),
         SubCommand::List(_) => Operation::List,
         SubCommand::Search(s) => Operation::Search(s.needle),
     };

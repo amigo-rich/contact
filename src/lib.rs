@@ -35,6 +35,9 @@ pub fn run(operation: Operation) -> Result<(), Error> {
         Operation::Add(contact) => {
             let _ = database.insert_contact(&contact)?;
         }
+        Operation::Delete(id) => {
+            let _ = database.delete_contact(id)?;
+        }
         Operation::List => {
             if let Some(results) = database.select_contacts()? {
                 println!(
