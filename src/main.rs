@@ -11,6 +11,7 @@ struct Opts {
 #[derive(Clap)]
 enum SubCommand {
     Add(Add),
+    List(List),
     Search(Search),
 }
 
@@ -34,6 +35,10 @@ struct Add {
     telephone: Option<String>,
 }
 
+/// List all contacts
+#[derive(Clap)]
+struct List {}
+
 /// Search for a contact
 #[derive(Clap)]
 struct Search {
@@ -56,7 +61,8 @@ fn main() -> Result<(), Error> {
             }
             Operation::Add(contact)
         }
-        SubCommand::Search(s) => Operation::List(s.needle),
+        SubCommand::List(_) => Operation::List,
+        SubCommand::Search(s) => Operation::Search(s.needle),
     };
     run(operation)
 }

@@ -3,6 +3,23 @@ use crate::error::{Error, Field};
 use rusqlite::{params, Connection};
 use std::path::Path;
 
+pub struct Record<T> {
+    id: i64,
+    record: T,
+}
+
+impl<T> Record<T> {
+    pub fn new(id: i64, record: T) -> Self {
+        Record { id, record }
+    }
+    pub fn id(&self) -> i64 {
+        self.id
+    }
+    pub fn record(&self) -> &T {
+        &self.record
+    }
+}
+
 pub struct Database {
     connection: Connection,
 }
@@ -49,6 +66,32 @@ impl Database {
             ],
         )?;
         Ok(self.connection.last_insert_rowid())
+    }
+    pub fn select_contacts(&self) -> Result<Option<Vec<Record<Contact>>>, Error> {
+        let sql = r#"
+            SELECT id, forename, surname, email, organisation, telephone
+            FROM contact
+            ORDER BY surname, forename
+        "#;
+        let mut statement = self.connection.prepare(sql)?;
+        let iterator = statement.query_map(params![], |row| {
+            let mut contact = Contact::new(row.get(1)?, row.get(2)?, row.get(3)?).unwrap();
+            if let Some(organisation) = row.get(4)? {
+                contact.set_organisation(organisation).unwrap();
+            }
+            if let Some(telephone) = row.get(5)? {
+                contact.set_telephone(telephone).unwrap();
+            }
+            Ok(Record::<Contact>::new(row.get(0)?, contact))
+        })?;
+        let mut results: Vec<Record<Contact>> = Vec::new();
+        for result in iterator {
+            results.push(result?);
+        }
+        if results.is_empty() {
+            return Ok(None);
+        }
+        Ok(Some(results))
     }
     pub fn select_contact(&self, needle: &str) -> Result<Option<Vec<Contact>>, Error> {
         if needle.is_empty() {

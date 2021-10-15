@@ -35,7 +35,26 @@ pub fn run(operation: Operation) -> Result<(), Error> {
         Operation::Add(contact) => {
             let _ = database.insert_contact(&contact)?;
         }
-        Operation::List(needle) => {
+        Operation::List => {
+            if let Some(results) = database.select_contacts()? {
+                println!(
+                    "{:<5}{:<10}{:<10}{:<35}{:<15}{:<10}",
+                    "Id", "Forename", "Surname", "Email", "Organisation", "Telephone",
+                );
+                for result in results {
+                    println!(
+                        "{:<5}{:<10}{:<10}{:<35}{:<15}{:<10}",
+                        result.id(),
+                        result.record().forename(),
+                        result.record().surname(),
+                        result.record().email().to_string(),
+                        result.record().organisation().unwrap_or("None"),
+                        result.record().telephone().unwrap_or("None"),
+                    );
+                }
+            }
+        }
+        Operation::Search(needle) => {
             if let Some(results) = database.select_contact(&needle)? {
                 println!("{} result(s):", results.len());
                 for result in results {
