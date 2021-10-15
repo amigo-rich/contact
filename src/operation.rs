@@ -1,6 +1,6 @@
 use crate::contact::Contact;
 
-pub enum Operation<'a> {
+pub enum Operation {
     Add(Contact),
-    List(&'a str),
+    List(String),
 }

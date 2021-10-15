@@ -12,7 +12,7 @@ pub struct Contact {
 }
 
 impl Contact {
-    pub fn new(forename: &str, surname: &str, email: &str) -> Result<Self, Error> {
+    pub fn new(forename: String, surname: String, email: String) -> Result<Self, Error> {
         if forename.is_empty() {
             return Err(Error::Empty(Field::Forename));
         } else if surname.is_empty() {
@@ -20,27 +20,27 @@ impl Contact {
         } else if email.is_empty() {
             return Err(Error::Empty(Field::Email));
         }
-        let email = EmailAddress::from_str(email)?;
+        let email = EmailAddress::from_str(&email)?;
         Ok(Contact {
-            forename: forename.to_string(),
-            surname: surname.to_string(),
+            forename,
+            surname,
             email,
             organisation: None,
             telephone: None,
         })
     }
-    pub fn set_organisation(&mut self, organisation: &str) -> Result<(), Error> {
+    pub fn set_organisation(&mut self, organisation: String) -> Result<(), Error> {
         if organisation.is_empty() {
             return Err(Error::Empty(Field::Organisation));
         }
-        self.organisation = Some(organisation.to_string());
+        self.organisation = Some(organisation);
         Ok(())
     }
-    pub fn set_telephone(&mut self, telephone: &str) -> Result<(), Error> {
+    pub fn set_telephone(&mut self, telephone: String) -> Result<(), Error> {
         if telephone.is_empty() {
             return Err(Error::Empty(Field::Telephone));
         }
-        self.telephone = Some(telephone.to_string());
+        self.telephone = Some(telephone);
         Ok(())
     }
     pub fn forename(&self) -> &str {

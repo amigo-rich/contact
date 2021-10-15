@@ -71,10 +71,7 @@ impl Database {
         );
         let mut statement = self.connection.prepare(&sql)?;
         let iterator = statement.query_map(params![], |row| {
-            let forename: String = row.get(0)?;
-            let surname: String = row.get(1)?;
-            let email: String = row.get(2)?;
-            Ok(Contact::new(&forename, &surname, &email).unwrap())
+            Ok(Contact::new(row.get(0)?, row.get(1)?, row.get(2)?).unwrap())
         })?;
         let mut results: Vec<Contact> = Vec::new();
         for result in iterator {

@@ -36,7 +36,7 @@ pub fn run(operation: Operation) -> Result<(), Error> {
             let _ = database.insert_contact(&contact)?;
         }
         Operation::List(needle) => {
-            if let Some(results) = database.select_contact(needle)? {
+            if let Some(results) = database.select_contact(&needle)? {
                 println!("{} result(s):", results.len());
                 for result in results {
                     println!("{}", result);
