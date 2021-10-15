@@ -8,17 +8,20 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn create<I, T>(p: &Path, tables: I) -> Result<Self, Error>
-    where
-        I: Iterator<Item = T>,
-        T: AsRef<str>,
-    {
+    pub fn create(p: &Path) -> Result<Self, Error> {
+        let sql = r#"
+            CREATE TABLE contact (
+                id INTEGER PRIMARY KEY,
+                forename TEXT NOT NULL,
+                surname TEXT NOT NULL,
+                email TEXT NOT NULL,
+                organisation TEXT,
+                telephone TEXT
+            )
+        "#;
         let mut connection = Connection::open(p)?;
-
         let transaction = connection.transaction()?;
-        for table in tables {
-            transaction.execute(table.as_ref(), params![])?;
-        }
+        transaction.execute(sql, params![])?;
         transaction.commit()?;
 
         Ok(Database { connection })

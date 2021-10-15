@@ -6,12 +6,9 @@ pub mod error;
 use error::Error;
 pub mod operation;
 use operation::Operation;
-mod schema;
-use schema::read_schemas;
 use std::path::Path;
 
 const ENV_KEY: &str = "CONTACT_DB";
-const SCHEMA_DIR: &str = "schema";
 
 fn get_database_env() -> Result<String, Error> {
     for (k, v) in env::vars() {
@@ -27,13 +24,7 @@ fn get_database() -> Result<Database, Error> {
     let path = Path::new(&maybe_path);
     let database = match path.is_file() {
         true => Database::open(path)?,
-        false => {
-            if let Some(schemas) = read_schemas(Path::new(SCHEMA_DIR))? {
-                Database::create(path, schemas.iter())?
-            } else {
-                return Err(Error::NoSchemaFile(Path::new(SCHEMA_DIR).to_path_buf()));
-            }
-        }
+        false => Database::create(path)?,
     };
     Ok(database)
 }
