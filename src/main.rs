@@ -1,14 +1,14 @@
-use clap::Clap;
+use clap::Parser;
 use contact::{contact::Contact, error::Error, operation::Operation, run};
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = "0.1", author = "Richard Bradshaw <merryidleness@gmail.com>")]
 struct Opts {
     #[clap(subcommand)]
     subcmd: SubCommand,
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 enum SubCommand {
     Add(Add),
     Delete(Delete),
@@ -17,7 +17,7 @@ enum SubCommand {
 }
 
 /// Add a new contact
-#[derive(Clap)]
+#[derive(Parser)]
 struct Add {
     /// The contact's forename
     #[clap(short, long)]
@@ -37,7 +37,7 @@ struct Add {
 }
 
 /// Delete the contact with a given Id
-#[derive(Clap)]
+#[derive(Parser)]
 struct Delete {
     /// The contact's Id, use 'list' to determine this
     #[clap(short, long)]
@@ -45,11 +45,11 @@ struct Delete {
 }
 
 /// List all contacts
-#[derive(Clap)]
+#[derive(Parser)]
 struct List {}
 
 /// Search for a contact
-#[derive(Clap)]
+#[derive(Parser)]
 struct Search {
     /// The needle to search for. Search includes forename, surname, email, organisation
     /// and telephone.
