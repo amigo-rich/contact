@@ -84,7 +84,7 @@ impl Database {
         let mut statement = self.connection.prepare(sql)?;
         let iterator =
             statement.query_and_then(params![], |row| -> Result<Record<Contact>, Error> {
-                let mut contact = Contact::new(row.get(1)?, row.get(2)?, row.get(3)?).unwrap();
+                let mut contact = Contact::new(row.get(1)?, row.get(2)?, row.get(3)?)?;
                 if let Some(organisation) = row.get(4)? {
                     contact.set_organisation(organisation)?;
                 }
