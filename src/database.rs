@@ -106,25 +106,22 @@ impl Database {
         if needle.is_empty() {
             return Err(Error::Empty(Field::Needle));
         }
-        // yuck and unsafe! But have to do it this way to work around rusqlite and 'like'
-        // binding
-        let sql = format!(
-            r#"
-                SELECT forename, surname, email
-                FROM contact
-                WHERE LIKE('%{}%', forename)
-                OR LIKE('%{}%', surname)
-                OR LIKE('%{}%', email)
-                OR LIKE('%{}%', organisation)
-                OR LIKE('%{}%', telephone)
-                ORDER BY surname, forename
-            "#,
-            needle, needle, needle, needle, needle
-        );
+        let needle = format!("%{}%", needle);
+        let sql = r#"
+            SELECT forename, surname, email
+            FROM contact
+            WHERE LIKE(?1, forename)
+            OR LIKE(?2, surname)
+            OR LIKE(?3, email)
+            OR LIKE(?4, organisation)
+            OR LIKE(?5, telephone)
+            ORDER BY surname, forename
+        "#;
         let mut statement = self.connection.prepare(&sql)?;
-        let iterator = statement.query_and_then(params![], |row| -> Result<Contact, Error> {
-            Contact::new(row.get(0)?, row.get(1)?, row.get(2)?)
-        })?;
+        let iterator = statement.query_and_then(
+            params![&needle, &needle, &needle, &needle, &needle],
+            |row| -> Result<Contact, Error> { Contact::new(row.get(0)?, row.get(1)?, row.get(2)?) },
+        )?;
         let mut results: Vec<Contact> = Vec::new();
         for result in iterator {
             results.push(result?);
