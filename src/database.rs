@@ -82,16 +82,17 @@ impl Database {
             ORDER BY surname, forename
         "#;
         let mut statement = self.connection.prepare(sql)?;
-        let iterator = statement.query_map(params![], |row| {
-            let mut contact = Contact::new(row.get(1)?, row.get(2)?, row.get(3)?).unwrap();
-            if let Some(organisation) = row.get(4)? {
-                contact.set_organisation(organisation).unwrap();
-            }
-            if let Some(telephone) = row.get(5)? {
-                contact.set_telephone(telephone).unwrap();
-            }
-            Ok(Record::<Contact>::new(row.get(0)?, contact))
-        })?;
+        let iterator =
+            statement.query_and_then(params![], |row| -> Result<Record<Contact>, Error> {
+                let mut contact = Contact::new(row.get(1)?, row.get(2)?, row.get(3)?).unwrap();
+                if let Some(organisation) = row.get(4)? {
+                    contact.set_organisation(organisation)?;
+                }
+                if let Some(telephone) = row.get(5)? {
+                    contact.set_telephone(telephone)?;
+                }
+                Ok(Record::<Contact>::new(row.get(0)?, contact))
+            })?;
         let mut results: Vec<Record<Contact>> = Vec::new();
         for result in iterator {
             results.push(result?);
@@ -121,8 +122,8 @@ impl Database {
             needle, needle, needle, needle, needle
         );
         let mut statement = self.connection.prepare(&sql)?;
-        let iterator = statement.query_map(params![], |row| {
-            Ok(Contact::new(row.get(0)?, row.get(1)?, row.get(2)?).unwrap())
+        let iterator = statement.query_and_then(params![], |row| -> Result<Contact, Error> {
+            Ok(Contact::new(row.get(0)?, row.get(1)?, row.get(2)?)?)
         })?;
         let mut results: Vec<Contact> = Vec::new();
         for result in iterator {
