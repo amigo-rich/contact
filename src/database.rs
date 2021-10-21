@@ -123,7 +123,7 @@ impl Database {
         );
         let mut statement = self.connection.prepare(&sql)?;
         let iterator = statement.query_and_then(params![], |row| -> Result<Contact, Error> {
-            Ok(Contact::new(row.get(0)?, row.get(1)?, row.get(2)?)?)
+            Contact::new(row.get(0)?, row.get(1)?, row.get(2)?)
         })?;
         let mut results: Vec<Contact> = Vec::new();
         for result in iterator {
