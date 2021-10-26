@@ -117,7 +117,7 @@ impl Database {
             OR LIKE(?5, telephone)
             ORDER BY surname, forename
         "#;
-        let mut statement = self.connection.prepare(&sql)?;
+        let mut statement = self.connection.prepare(sql)?;
         let iterator = statement.query_and_then(
             params![&needle, &needle, &needle, &needle, &needle],
             |row| -> Result<Contact, Error> { Contact::new(row.get(0)?, row.get(1)?, row.get(2)?) },
